@@ -14,7 +14,6 @@ from typing import (
 from aiokafka import ConsumerRecord
 from aiokafka.coordinator.assignors.roundrobin import RoundRobinPartitionAssignor
 from aiokafka.partitioner import DefaultPartitioner
-from aiokafka.producer.producer import _missing  # noqa: PLC2701
 from fastapi.datastructures import Default
 from fastapi.routing import APIRoute
 from fastapi.utils import generate_unique_id
@@ -27,6 +26,7 @@ from faststream._internal.constants import EMPTY
 from faststream._internal.context import ContextRepo
 from faststream._internal.fastapi.router import StreamRouter
 from faststream._internal.types import IdGenerator
+from faststream.kafka._compat import ACKS_UNSET
 from faststream.kafka.broker.broker import KafkaBroker as KB
 from faststream.message import gen_cor_id
 from faststream.middlewares import AckPolicy
@@ -88,7 +88,7 @@ class KafkaRouter(
         client_id: str | None = SERVICE_NAME,
         allow_auto_create_topics: bool = True,
         # publisher args
-        acks: Literal[0, 1, -1, "all"] | object = _missing,
+        acks: Literal[0, 1, -1, "all"] = ACKS_UNSET,
         key_serializer: Callable[[Any], bytes] | None = None,
         value_serializer: Callable[[Any], bytes] | None = None,
         compression_type: Literal["gzip", "snappy", "lz4", "zstd"] | None = None,

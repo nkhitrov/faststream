@@ -473,3 +473,11 @@ KafkaRouter().include_router(KafkaRouter())
 KafkaRouter().include_routers(KafkaRouter())
 
 FastAPIRouter().include_router(KafkaRouter())
+
+
+def check_acks() -> None:
+    KafkaBroker(acks="all")
+    KafkaBroker(acks=-1)
+    KafkaBroker(acks="any")  # type: ignore[arg-type]
+    FastAPIRouter(acks=1)
+    FastAPIRouter(acks="any")  # type: ignore[arg-type]
