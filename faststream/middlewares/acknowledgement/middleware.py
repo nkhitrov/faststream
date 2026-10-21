@@ -79,7 +79,7 @@ class _AcknowledgementMiddleware(BaseMiddleware):
         exc_type: type[BaseException] | None = None,
         exc_val: BaseException | None = None,
         exc_tb: Optional["TracebackType"] = None,
-    ) -> bool | None:
+    ) -> bool:
         if self.ack_policy is AckPolicy.ACK_FIRST:
             return False
 
