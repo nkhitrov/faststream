@@ -8,7 +8,7 @@ from typer.testing import CliRunner
 
 from faststream import FastStream
 from faststream._internal.cli.main import cli as faststream_app
-from faststream._internal.cli.utils.logs import get_log_level
+from faststream._internal.cli.utils.logs import get_log_level, set_log_config
 from tests.cli import interfaces
 from tests.marks import skip_windows
 
@@ -201,3 +201,22 @@ def test_run_with_wrong_log_level(runner: CliRunner) -> None:
         )
 
         assert result.exit_code == 2, result.output
+
+
+@pytest.mark.parametrize(
+    ("file_name", "content"),
+    (
+        pytest.param("config.json", "[1, 2]", id="json"),
+        pytest.param("config.yaml", "- 1\n- 2\n", id="yaml"),
+    ),
+)
+def test_log_config_must_be_mapping(
+    tmp_path: Path,
+    file_name: str,
+    content: str,
+) -> None:
+    config_file = tmp_path / file_name
+    config_file.write_text(content, encoding="utf-8")
+
+    with pytest.raises(ValueError, match="must contain a mapping"):
+        set_log_config(config_file)

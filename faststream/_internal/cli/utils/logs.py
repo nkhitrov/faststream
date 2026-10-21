@@ -88,13 +88,13 @@ def set_log_level(level: int, app: "Application") -> None:
         broker.config.logger.set_level(level)
 
 
-def _get_json_config(file: Path) -> dict[str, Any] | Any:
+def _get_json_config(file: Path) -> Any:
     """Parse json config file to dict."""
     with file.open("r", encoding="utf-8") as config_file:
         return json.load(config_file)
 
 
-def _get_yaml_config(file: Path) -> dict[str, Any] | Any:
+def _get_yaml_config(file: Path) -> Any:
     """Parse yaml config file to dict."""
     try:
         import yaml
@@ -106,7 +106,7 @@ def _get_yaml_config(file: Path) -> dict[str, Any] | Any:
         return yaml.safe_load(config_file)
 
 
-def _get_toml_config(file: Path) -> dict[str, Any] | Any:
+def _get_toml_config(file: Path) -> Any:
     """Parse toml config file to dict."""
     try:
         import tomllib
@@ -121,7 +121,7 @@ def _get_toml_config(file: Path) -> dict[str, Any] | Any:
         return tomllib.load(config_file)
 
 
-def _get_log_config(file: Path) -> dict[str, Any] | Any:
+def _get_log_config(file: Path) -> dict[str, Any]:
     """Read dict config from file."""
     if not file.exists():
         msg = f"File {file} specified to --log-config not found"
@@ -138,6 +138,10 @@ def _get_log_config(file: Path) -> dict[str, Any] | Any:
     else:
         msg = f"Format {file_format} specified to --log-config file is not supported"
         raise ValueError(msg)
+
+    if not isinstance(logging_config, dict):
+        msg = f"File {file} specified to --log-config must contain a mapping"
+        raise ValueError(msg)  # noqa: TRY004
 
     return logging_config
 

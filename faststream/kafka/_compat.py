@@ -1,4 +1,7 @@
 from importlib.metadata import version
+from typing import Any
+
+from aiokafka.producer.producer import _missing
 
 from faststream.exceptions import SetupError
 
@@ -7,6 +10,11 @@ _AIOKAFKA_VERSION = version("aiokafka")
 major, minor, *_ = _AIOKAFKA_VERSION.split(".")
 
 _AIOKAFKA_MAJOR, _AIOKAFKA_MINOR = int(major), int(minor)
+
+# aiokafka marks an unset `acks` with a private `object()` sentinel. Typed as `Any`
+# so the parameter can be annotated with its real values only: with
+# `Literal[...] | object` any value passed type checking.
+ACKS_UNSET: Any = _missing
 
 # 0.13.0 removed `api_version` from every client; 0.14.0 accepts it again as a no-op
 AIOKAFKA_V013 = (_AIOKAFKA_MAJOR, _AIOKAFKA_MINOR) >= (0, 13)

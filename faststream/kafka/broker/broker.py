@@ -15,7 +15,6 @@ from typing import (
 import aiokafka
 import anyio
 from aiokafka.partitioner import DefaultPartitioner
-from aiokafka.producer.producer import _missing  # noqa: PLC2701
 from aiokafka.structs import RecordMetadata
 from fast_depends import Provider, dependency_provider
 from typing_extensions import override
@@ -28,7 +27,7 @@ from faststream._internal.di import FastDependsConfig
 from faststream._internal.types import IdGenerator
 from faststream._internal.utils.data import filter_by_dict
 from faststream.exceptions import IncorrectState
-from faststream.kafka._compat import AIOKAFKA_V013, validate_client_rack
+from faststream.kafka._compat import ACKS_UNSET, AIOKAFKA_V013, validate_client_rack
 from faststream.kafka.configs import KafkaBrokerConfig
 from faststream.kafka.publisher.producer import AioKafkaFastProducerImpl
 from faststream.kafka.response import KafkaPublishCommand
@@ -171,7 +170,7 @@ if TYPE_CHECKING:
         consumer_only: bool
         allow_auto_create_topics: bool
         # publisher args
-        acks: Literal[0, 1, -1, "all"] | object
+        acks: Literal[0, 1, -1, "all"]
         key_serializer: Callable[[Any], bytes] | None
         value_serializer: Callable[[Any], bytes] | None
         compression_type: Literal["gzip", "snappy", "lz4", "zstd"] | None
@@ -216,7 +215,7 @@ class KafkaBroker(
         consumer_only: bool = False,
         allow_auto_create_topics: bool = True,
         # publisher args
-        acks: Literal[0, 1, -1, "all"] | object = _missing,
+        acks: Literal[0, 1, -1, "all"] = ACKS_UNSET,
         key_serializer: Callable[[Any], bytes] | None = None,
         value_serializer: Callable[[Any], bytes] | None = None,
         compression_type: Literal["gzip", "snappy", "lz4", "zstd"] | None = None,
@@ -298,7 +297,7 @@ class KafkaBroker(
                 ``allow.auto.create.topics`` consumer option, so the cluster's own
                 ``auto.create.topics.enable`` is a separate switch. Defaults to True.
                 Set to False when topics are provisioned elsewhere.
-            acks (Union[Literal[0, 1, -1, "all"], object]):
+            acks (Literal[0, 1, -1, "all"]):
                 One of ``0``, ``1``, ``all``. The number of acknowledgments the producer requires the leader to have received before considering a
                 request complete. This controls the durability of records that are sent. The following settings are common:
                 * ``0``: Producer will not wait for any acknowledgment from the server at all. The message will immediately be added to the socket
